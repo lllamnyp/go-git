@@ -1,19 +1,17 @@
-# Базовый образ для сборки
-FROM golang:1.12.5
+# Базовый образ ТОЛЬКО для сборки
+FROM golang:1.12.5 as builder
 
 WORKDIR $GOPATH/src/go-git/
-# Кладём сырцы в рабочую директорию
 COPY main.go .
-# Скачиваем зависимости
-RUN go get -d -v ./...
-# Компилируем
-RUN CGO_ENABLED=0 GOOS=linux go build \
-    -a -installsuffix cgo -o /go-git .
+RUN go get -d -v ./... && \
+    CGO_ENABLED=0 GOOS=linux go build \
+    -a -installsuffix cgo -o /go-git . && \
+    chmod 755 /go-git
 
-RUN chmod 755 /go-git
-
-WORKDIR /
-
+# Образ для приложения
+FROM alpine
+# Добавляем собранный бинарь
+COPY --from=builder /go-git /go-git
 # Добавляем статику
 COPY *.html /static/
 COPY *.jpg /static/
