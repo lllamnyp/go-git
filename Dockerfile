@@ -9,7 +9,7 @@ RUN go get -d -v ./... && \
     chmod 755 /go-git
 
 # Образ для приложения
-FROM alpine
+FROM scratch
 # Добавляем собранный бинарь
 COPY --from=builder /go-git /go-git
 # Добавляем статику
