@@ -1,29 +1,23 @@
-# FROM golang:1.12.5 as builder
-# 
-# WORKDIR $GOPATH/src/hello-http/
-# 
-# COPY main.go .
-# 
-# RUN go get -d -v ./...
-# 
-# RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /go/bin/hello-http .
-# 
-######## Start a new stage from scratch #######
-#FROM alpine:latest  
-FROM scratch
+# Базовый образ для сборки
+FROM golang:1.12.5
 
-#RUN apk --no-cache add ca-certificates
+WORKDIR $GOPATH/src/go-git/
+# Кладём сырцы в рабочую директорию
+COPY main.go .
+# Скачиваем зависимости
+RUN go get -d -v ./...
+# Компилируем
+RUN CGO_ENABLED=0 GOOS=linux go build \
+    -a -installsuffix cgo -o /go-git .
 
-#WORKDIR /root/
+RUN chmod 755 /go-git
 
-# Copy the Pre-built binary file from the previous stage
-# COPY --from=builder /go/bin/hello-http .
-COPY go-git .
+WORKDIR /
 
+# Добавляем статику
 COPY *.html /static/
-
 COPY *.jpg /static/
 
 EXPOSE 8080
-
+# Запускаем приложение
 CMD ["./go-git"]
