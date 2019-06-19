@@ -36,3 +36,4 @@ Deploy_to_k8s:
     - mkdir -p /root/.kube
     - echo "${K8S_CONFIG}" | base64 -d > /root/.kube/config
     - kubectl apply -f deployment.yml -n test-nginx
+    - kubectl apply -f service.yml -n test-nginx
