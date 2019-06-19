@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: go-git
+  name: go-git-ingress
+  namespace: test-nginx
+spec:
+  rules:
+  - host: gogit.do.x5.ru
+    http:
+      paths:
+      - backend:
+          serviceName: go-git-svc
+          servicePort: 80
