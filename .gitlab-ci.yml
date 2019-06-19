@@ -26,3 +26,13 @@ Docker_build_job:
         -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
     - docker build -t ${CONTAINER_IMAGE} .
     - docker push ${CONTAINER_IMAGE}
+
+Deploy_to_k8s:
+  stage: deploy
+  image: registry.do.x5.ru/shared/base-image:latest
+  tags:
+    - k8s-testlab
+  script:
+    - mkdir -p /root/.kube
+    - echo "${K8S_CONFIG}" | base64 -d > /root/.kube/config
+    - kubectl apply -f deployment.yml -n test-nginx
