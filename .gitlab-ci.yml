@@ -1,0 +1,25 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://localhost:2375
+
+stages:
+  - build
+  - deploy
+
+Docker_build_job:
+  stage: build
+  image: docker:stable
+  services:
+    - name: docker:dind
+      entrypoint:
+        - /bin/sh
+      command:
+        - -c
+        - update-ca-certificates && dockerd-entrypoint.sh
+  tags:
+    - k8s-testlab
+  script:
+    - update-ca-certificates
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} registry.do.x5.ru
+    - docker build -t registry.do.x5.ru/devops/git-go:latest .
+    - docker push registry.do.x5.ru/devops/git-go:latest
